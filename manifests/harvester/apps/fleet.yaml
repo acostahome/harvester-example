@@ -4,4 +4,5 @@ helm:
   valuesFiles:
     - nfs-csi-driver-values.yaml
   version: 4.13.4
+name: nfs-csi-driver
 namespace: kube-system
