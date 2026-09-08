@@ -1,4 +1,5 @@
 helm:
+  releaseName: nfs-csi-driver
   repo: oci://registry.lab.internal:5000/charts/nfs-csi-driver
   valuesFiles:
     - nfs-csi-driver-values.yaml
