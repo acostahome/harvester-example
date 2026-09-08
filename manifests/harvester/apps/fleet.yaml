@@ -1,8 +1,8 @@
 helm:
-  releaseName: nfs-csi-driver
-  repo: oci://registry.lab.internal:5000/charts/nfs-csi-driver
+  releaseName: csi-driver-nfs
+  repo: oci://registry.lab.internal:5000/charts/csi-driver-nfs
   valuesFiles:
-    - nfs-csi-driver-values.yaml
+    - csi-driver-nfs-values.yaml
   version: 4.13.4
-name: nfs-csi-driver
+name: csi-driver-nfs
 namespace: kube-system
