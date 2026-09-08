@@ -1,7 +1,9 @@
 defaultNamespace: kube-system
+name: csi-driver-nfs
 helm:
   releaseName: csi-driver-nfs
   repo: oci://registry.lab.internal:5000/charts/csi-driver-nfs
+  version: 4.13.4
   values:
     controller:
       replicas: 2
@@ -52,5 +54,3 @@ helm:
         volumeBindingMode: Immediate
         mountOptions:
           - nfsvers=4.1
-  version: 4.13.4
-name: csi-driver-nfs
