@@ -1,3 +1,4 @@
+defaultNamespace: kube-system
 helm:
   releaseName: csi-driver-nfs
   repo: oci://registry.lab.internal:5000/charts/csi-driver-nfs
@@ -53,4 +54,3 @@ helm:
           - nfsvers=4.1
   version: 4.13.4
 name: csi-driver-nfs
-namespace: kube-system
