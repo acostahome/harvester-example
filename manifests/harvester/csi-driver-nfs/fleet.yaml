@@ -1,19 +1,11 @@
 defaultNamespace: kube-system
 name: csi-driver-nfs
 helm:
+  chart: csi-driver-nfs
   releaseName: csi-driver-nfs
-  repo: oci://registry.lab.internal:5000/charts/csi-driver-nfs
+  repo: https://kubernetes-csi.github.io/csi-driver-nfs
   version: 4.13.4
   values:
-    controller:
-      replicas: 2
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: kubernetes.io/hostname
-              labelSelector:
-                matchLabels:
-                  app: csi-nfs-controller
     image:
       baseRepo: registry.lab.internal:5000
       nfs:
