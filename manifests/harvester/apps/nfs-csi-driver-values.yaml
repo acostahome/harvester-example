@@ -1,0 +1,49 @@
+controller:
+  replicas: 2
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app: csi-nfs-controller
+image:
+  baseRepo: registry.lab.internal:5000
+  nfs:
+    repository: registry.lab.internal:5000/sig-storage/nfsplugin
+    tag: v4.13.4
+  csiProvisioner:
+    repository: /rancher/mirrored-sig-storage-csi-provisioner
+    tag: v6.3.0
+  csiResizer:
+    repository: /rancher/mirrored-sig-storage-csi-resizer
+    tag: v2.2.1
+  csiSnapshotter:
+    repository: /rancher/mirrored-sig-storage-csi-snapshotter
+    tag: v8.6.0
+  livenessProbe:
+    repository: /rancher/mirrored-sig-storage-livenessprobe
+    tag: v2.19.0
+  nodeDriverRegistrar:
+    repository: /rancher/mirrored-sig-storage-csi-node-driver-registrar
+    tag: v2.17.0
+  externalSnapshotter:
+    repository: /rancher/mirrored-sig-storage-snapshot-controller
+    tag: v8.4.0
+storageClasses:
+  - name: nfs-delete
+    parameters:
+      server: nas.lab.internal
+      share: /mnt/shared/data
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    mountOptions:
+      - nfsvers=4.1
+  - name: nfs-retain
+    parameters:
+      server: nas.lab.internal
+      share: /mnt/shared/data
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    mountOptions:
+      - nfsvers=4.1

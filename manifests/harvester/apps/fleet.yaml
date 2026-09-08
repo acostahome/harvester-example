@@ -1,0 +1,6 @@
+helm:
+  repo: oci://registry.lab.internal:5000/charts/nfs-csi-driver
+  valuesFiles:
+    - nfs-csi-driver-values.yaml
+  version: 4.13.4
+namespace: kube-system
