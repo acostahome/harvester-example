@@ -1,0 +1,66 @@
+#cloud-config
+ca_certs:
+  trusted:
+  - |
+    -----BEGIN CERTIFICATE-----
+    MIIF2zCCA8OgAwIBAgIUM05xpu+15xFJgRlVsva5dTQZTUgwDQYJKoZIhvcNAQEN
+    BQAwRDELMAkGA1UEBhMCVVMxFzAVBgNVBAMMDkFjb3N0YSBIb21lIENBMQ8wDQYD
+    VQQHDAZEYWxsYXMxCzAJBgNVBAgMAlRYMB4XDTI2MDkwNjEwMDA1NVoXDTM2MDkw
+    NjEwMDA1NVowRDELMAkGA1UEBhMCVVMxFzAVBgNVBAMMDkFjb3N0YSBIb21lIENB
+    MQ8wDQYDVQQHDAZEYWxsYXMxCzAJBgNVBAgMAlRYMIICIjANBgkqhkiG9w0BAQEF
+    AAOCAg8AMIICCgKCAgEAyjPG9edH3zw5TzZXIKROqLQHEIGRoW9bRVCQevHccFe4
+    5j9Tr7rRuessQ/fQWQwz4ITq4uvlieORx8PjPPVY7KtaBavPzXoxgf+v24BbKLkf
+    IMKTtXBCGx2fKChiZzLCLQsod+n8sKD9aSiASUc+88lmf8+acKtNafXgTgOj/OdY
+    bN++zDp++kgKPIh5ovX0Mrkac7zX/c8OkZDd//YUr2adE07H3Utr+nArl7NwnngB
+    HghZMEmOrYxkGvuacrnoS6qgKh7R7FNYTTYI96FgXw1sl6QaqKOnisfjKhXF2rQt
+    kDYARqOOjF+vn5/7M3MIwjXD0KLmKmkvlz5BRGWX2DAQlX7v/wZiC6H/F85GXyW9
+    xM2jEKOQsHPHXTB7x4W5QUXgXjoO369NBeYlO2lo90umXjzknTiOwTr41aX70f0o
+    72tHV9YR3t5akFzF5ZtX4xr38nnbeRcxVcFXepI9sg9BUNwr0iPmKS9yWXbkc2Gq
+    zFlvlGRQD9FCAWpmQoZT+9DcyEBmNKSJKWE5CCX9p+P4xrxyOuxfP9hCL9cNN0kX
+    MIdb1w9kPQ1IDtrnJa5L5VK8Whr+nJnTbY1gY2Yd+TUEvziqyEHKhQKUJbjHO6qi
+    6f34q4GkJOqKF6JGcoi4aF3hB/7FJGyuzsa9HUq5kPqaasFmLjbJHGZX3gSpXrEC
+    AwEAAaOBxDCBwTAdBgNVHQ4EFgQUr8Qmv3GGyzcDStNGRNJWdYNKkWcwDwYDVR0T
+    AQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAQYwfwYDVR0jBHgwdoAUr8Qmv3GGyzcD
+    StNGRNJWdYNKkWehSKRGMEQxCzAJBgNVBAYTAlVTMRcwFQYDVQQDDA5BY29zdGEg
+    SG9tZSBDQTEPMA0GA1UEBwwGRGFsbGFzMQswCQYDVQQIDAJUWIIUM05xpu+15xFJ
+    gRlVsva5dTQZTUgwDQYJKoZIhvcNAQENBQADggIBAL6vHTcdYTgHp3d4zgoAKlOU
+    gpGRuI0MCaz47y2ryYoE3vLeQNooppVzhNcF0SmKoMPet8xJwbq2pKA7cOOO4njJ
+    xDbDtfwtZPZt4/0L05TBvaYJEstvBlpF8xIPFvH+ml4FCZ6/4xmFIIoiDiGJ4tAx
+    0XIh6c71OHV9fUiCQAbiv7tf04yLNsWJ59BWVtu1FKc7Wj9tqBHMD7OrDerdDNEL
+    W/gW0AE4EdHX90PXBjVP1rELKwpzEv6aSOzaMcGEpl/z4Pg9w41NoEkhrJlzKY6K                                                                         7U3QRGE9D+SoKhBnzkzqApjFUZYOfH4o3X/IuG9dL/cGWnkvA3RhFEQglRTuZ/8+
+    ZbwSh3G0SAGKFlAmizNoVgz9ByKy6afzUWczfuBIClzoq3qh+aXirTArgH8CG7SJ
+    AtF0V4qYO9DRImUomxv4bNGU6bCFZa3WiX3Uyi1LyJ2vl51lmB/R9WzMZ0c2ftD7
+    H5hI544Q+tLQve/PIWfYMpJ/JEdNq7g4NMiWguAGHQ0gD2c9sCSg1V3R3TyysOl3
+    GnJqsLk2OHnO7R3tBXM4rmOx4RXEIxDcA0WaMCoS8M+XhXuOaMCSyB4XiVZ/Gv5m
+    1vjWyU96IzwW+2gh6/xLprRiOAwlabQ4yZ7mFFL4k4/BCHzUpJjyaCCWArV97Gt0
+    2xiQjHKYA6LYZyfopLkg
+    -----END CERTIFICATE-----
+packages:
+  - bash-completion
+  - iptables
+  - qemu-guest-agent
+package_update: true
+runcmd:
+  - - systemctl
+    - enable
+    - '--now'
+    - qemu-guest-agent
+  - - setenforce
+    - '0'
+  - - sed
+    - -i
+    - 's/SELINUX=.*/SELINUX=permissive/'
+    - /etc/selinux/config
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGUV5mYJt2mNSayglG9+ez4W66Cj5PdBfvg5+Mqf+e9G
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXKUEIYjdLCC3sc7M7m9CwP48EAr+OIWg/HaRct4ySJ
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKfcJb6/jblOBMgwYwhZWk65vIpFuv9PZ2Dt0ulO+ccK
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3Trbi3L21QECLF067lbZU4tjV2l3wnhE++C7PTZ6mQ                                                       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFVn5aTqxzXihtAu3SGGkbrzuQufJ71j2yJWyVUcjFyP
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDivYFF5bMZMiOK7t6SZas7fi1kqdbCuBvOGrVHCOlm1
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ4Hn6O8zcojKsGcmcbYXTjwS3pM6cS3wofw/Z9CnvF                                                       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1WfSgq1+Lpjay3sqNU6SZsVXT5VQtpDTfStQiFe26e
+users:
+  - default
+  - name: etcd
+    gecos: "etcd user"
+    shell: /sbin/nologin
+    system: true

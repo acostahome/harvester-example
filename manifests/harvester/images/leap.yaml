@@ -1,0 +1,15 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  annotations:
+    harvesterhci.io/storageClassName: harvester-longhorn
+  labels:
+    harvesterhci.io/imageDisplayName: leap-16.0-minimal-vm.x86_64-cloud.qcow2
+  name: leap-16
+  namespace: default
+spec:
+  backend: backingimage
+  displayName: leap-16.0-minimal-vm.x86_64-cloud.qcow2
+  sourceType: download
+  targetStorageClassName: harvester-longhorn
+  url: http://10.240.0.2:8080/Leap-16.0-Minimal-VM.x86_64-Cloud.qcow2

@@ -1,0 +1,12 @@
+**/.terraform/
+**/*.qcow2
+**/*.img
+**/*.iso
+**/*.tgz
+**/*.tar.gz
+**/*.tar.xz
+**/*.key
+**/*.pem
+**/store/
+**/*.tfstate*
+**/*-kubeconfig
