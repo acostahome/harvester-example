@@ -6,7 +6,7 @@ metadata:
   labels:
     harvesterhci.io/imageDisplayName: leap-16.0-minimal-vm.x86_64-cloud.qcow2
   name: leap-16
-  namespace: default
+  namespace: harvester-public
 spec:
   backend: backingimage
   displayName: leap-16.0-minimal-vm.x86_64-cloud.qcow2

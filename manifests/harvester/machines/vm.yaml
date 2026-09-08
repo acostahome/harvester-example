@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: leap-test-disk-0
+  namespace: harvester-public
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 40Gi
+  storageClassName: lh-a8593b7a-a109-45ca-a6a2-0e0a83249895
+---
+apiVersion: v1
+data:
+  networkdata: ""                                                                                                                          userdata: I2Nsb3VkLWNvbmZpZwpwYWNrYWdlX3VwZGF0ZTogdHJ1ZQpwYWNrYWdlczoKICAtIHFlbXUtZ3Vlc3QtYWdlbnQKcnVuY21kOgogIC0gLSBzeXN0ZW1jdGwKICAgIC0gZW5hYmxlCiAgICAtIC0tbm93CiAgICAtIHFlbXUtZ3Vlc3QtYWdlbnQuc2VydmljZQpzc2hfYXV0aG9yaXplZF9rZXlzOgogIC0gc3NoLWVkMjU1MTkKICAgIEFBQUFDM056YUMxbFpESTFOVEU1QUFBQUlEaXZZRkY1Yk1aTWlPSzd0NlNaYXM3Zmkxa3FkYkN1QnZPR3JWSENPbG0xCg==
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: leap-test-cloudinit
+  namespace: harvester-public
+type: secret
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: leap-test
+  namespace: harvester-public
+spec:
+  runStrategy: RerunOnFailure
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        harvesterhci.io/vmName: leap-test
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: network.harvesterhci.io/vmnet
+                operator: In
+                values:
+                - "true"
+      architecture: amd64
+      domain:
+        cpu:
+          cores: 2
+          maxSockets: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - bootOrder: 1
+            disk:
+              bus: virtio
+            name: disk-0
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+          inputs:
+          - bus: usb
+            name: tablet
+            type: tablet
+          interfaces:
+          - bridge: {}
+            macAddress: 5a:18:ed:53:10:7e
+            model: virtio
+            name: default
+        features:
+          acpi:
+            enabled: true
+        firmware:
+          serial: ef66d3f9-6b50-4021-9e3f-6a46e96163a3
+          uuid: f1487f0e-2fbf-4e81-8190-1f1b8a055a44
+        machine:
+          type: q35
+        memory:
+          guest: 4Gi
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: 200m
+            memory: 2730Mi
+      evictionStrategy: LiveMigrateIfPossible
+      hostname: leap-test
+      networks:
+      - multus:
+          networkName: harvester-public/vmnet
+        name: default
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: disk-0
+        persistentVolumeClaim:
+          claimName: leap-test-disk-0
+      - cloudInitNoCloud:
+          networkDataSecretRef:
+            name: leap-test-cloudinit
+          secretRef:
+            name: leap-test-cloudinit
+        name: cloudinitdisk

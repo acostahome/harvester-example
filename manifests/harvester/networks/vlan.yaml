@@ -1,0 +1,33 @@
+apiVersion: network.harvesterhci.io/v1beta1
+kind: VlanConfig
+metadata:
+  labels:
+    network.harvesterhci.io/clusternetwork: vmnet
+  name: vmnet
+spec:
+  clusterNetwork: vmnet
+  uplink:
+    bondOptions:
+      miimon: -1
+      mode: active-backup
+    linkAttributes:
+      txQLen: -1
+    nics:
+      - enp5s0f0np0
+---
+apiVersion: network.harvesterhci.io/v1beta1
+kind: VlanConfig
+metadata:
+  labels:
+    network.harvesterhci.io/clusternetwork: vmnet-airgap
+  name: vmnet-airgap
+spec:
+  clusterNetwork: vmnet-airgap
+  uplink:
+    bondOptions:
+      miimon: -1
+      mode: active-backup
+    linkAttributes:
+      txQLen: -1
+    nics:
+      - enp4s0
