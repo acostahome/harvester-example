@@ -10,3 +10,4 @@
 **/store/
 **/*.tfstate*
 **/*-kubeconfig
+**/*-cluster.yaml

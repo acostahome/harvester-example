@@ -1,19 +1,3 @@
-What is the full description of the feature set that was quoted versus the free version of Harvester.
-Want to see how to install a host/node.
-Want to see how to attach external NAS (NFS) storage to a cluster for use of all the VMs and K8s things.
-Want to see RBAC for the system and especially IDM/LDAP for the clusters and pods and differences for the free one.
-Want to see how to put 2 or more hosts together into a cluster
-Want to see how to manage more than one cluster. (Is that the same thing as #5?)
-Want to see how to “admin” a cluster using the vCenter analog tool – Rancher Manager maybe?
-Want to see the maintenance mode aka drain and fix.
-Want to see how to put on a container or deploy via helm after the hosts are going.
-Want to see how Longhorn gets setup using the NFS storage (recall we use Dell Isilons) and how that works.
-Want to see management of the RKE2 pods.
-Want to see how secrets management works relative to pods to/from Vault.
-Want to know about compatibility with CONSUL enterprise.
-We’ve been using the free version of RKE2 for a long time, so want to see if the workflows would change anything for the better using the paid/Prime version.
-Explain what Carbide actually gets us and can do as the customer and security folks will be all over that like a hobo on a hamburger.
-
 # Lab Environment Installation Instructions
 
 # PKI
@@ -157,6 +141,23 @@ Login to internal private registry:
 ```sh
 hauler login registry.lab.internal:5000 -u $REGISTRY_USER -p $REGISTRY_PASSWORD
 helm registry login registry.lab.internal:5000 -u $REGISTRY_USER -p $REGISTRY_PASSWORD
+```
+
+We are mostly not going to deploy anything that does not come with Harvester, but we will need to copy in the container images for the `csi-driver-nfs`. See [Advanced > Third Party Storage Support](https://docs.harvesterhci.io/v1.8/advanced/csidriver/).
+
+To stage the container images:
+
+```sh
+helm repo add csi-driver-nfs https://kubernetes-csi.github.io/csi-driver-nfs
+hauler store add image registry.k8s.io/sig-storage/nfsplugin:v4.13.4
+hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-provisioner:v6.3.0
+hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-resizer:v2.2.1
+hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-snapshotter:v8.6.0
+hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-livenessprobe:v2.19.0
+hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-node-driver-registrar:v2.17.0
+hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-snapshot-controller:v8.4.0
+hauler store copy registry://registry.lab.internal:5000
+rm -rf store
 ```
 
 # Harvester Lab Environment
@@ -738,6 +739,8 @@ mirrors:
       - "https://registry.lab.internal:5000"
   registry.rancher.com:
     endpoint:                                                                                                                        - "https://registry.lab.internal:5000"
+  registry.ranchercarbide.dev:
+    endpoint:                                                                                                                        - "https://registry.lab.internal:5000"
   registry.suse.com:
     endpoint:
       - "https://registry.lab.internal:5000"
@@ -1091,151 +1094,6 @@ Login to Rancher as the built-in local admin. Then follow the instructions at [C
 # Rancher Virtualization Management
 
 To import your Harvester cluster into Rancher to be managed by it, following the instructions at [Rancher Integration](https://docs.harvesterhci.io/v1.8/rancher/rancher-integration). Harvester Government (*not* community) is otherwise compliant with its own DISA STIG out-of-the-box, short of only providing a single break-glass admin user locally. Integration with Rancher is what allows for SSO and multi-user RBAC, making it now fully compliant.
-
-To be able to manage cluster workloads on the Harvester cluster itself, as opposed to guest clusters created by Rancher, enable the baremetal container workload feature in Rancher. First, download a kubeconfig from the Rancher UI, then use it. To enable the feature:
-
-```sh
-kubectl patch feature harvester-baremetal-container-workload -p '{"spec":{"value":true}}' --type merge
-```
-
-Alternatively, this may also be done through the UI.
-
-To create a cluster group that Fleet can use:
-
-```sh
-HARVESTER_CLUSTER_ID=$(kubectl get clusters.management.cattle.io -oyaml | 
-  yq '.items[] | select(.spec.displayName=="homelab") | .metadata.name')
-kubectl label clusters.fleet.cattle.io -n fleet-default "$HARVESTER_CLUSTER_ID" type=harvester-host location=homelab
-kubectl create -f -<<EOF
-apiVersion: fleet.cattle.io/v1alpha1
-kind: ClusterGroup
-metadata:
-  name: homelab-harvester
-  namespace: fleet-default
-spec:
-  selector:
-    matchLabels:
-      location: homelab
-      type: harvester-host
-EOF
-```
-
-# NFS CSI Driver
-
-See [Advanced > Third Party Storage Support](https://docs.harvesterhci.io/v1.8/advanced/csidriver/).
-
-First, we need to stage the Helm chart and container images:
-
-```sh
-helm repo add csi-driver-nfs https://kubernetes-csi.github.io/csi-driver-nfs
-helm pull csi-driver-nfs/csi-driver-nfs --version 4.13.4
-helm push csi-driver-nfs-4.13.4.tgz oci://registry.lab.internal:5000/charts
-hauler store add image registry.k8s.io/sig-storage/nfsplugin:v4.13.4
-hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-provisioner:v6.3.0
-hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-resizer:v2.2.1
-hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-snapshotter:v8.6.0
-hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-livenessprobe:v2.19.0
-hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-csi-node-driver-registrar:v2.17.0
-hauler store add image registry.ranchercarbide.dev/rancher/mirrored-sig-storage-snapshot-controller:v8.4.0
-hauler store copy registry://registry.lab.internal:5000
-rm -rf store
-```
-
-We need to create an ssh key auth secret for Rancher to be able to use Fleet from our private Git repo:
-
-```sh
-kubectl create -f -<<EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ssh-auth-github
-  namespace: fleet-default
-data:
-  ssh-privatekey: $(base64 -w0 <"$HOME/.ssh/id_ed25519")
-type: kubernetes.io/ssh-auth
-EOF
-```
-
-Then create a `GitRepo`:
-
-```sh
-kubectl create -f -<<EOF
-apiVersion: fleet.cattle.io/v1alpha1
-kind: GitRepo
-metadata:
-  name: homelab-harvester
-  namespace: fleet-default
-spec:
-  repo: git@github.com:acostahome/harvester-example.git
-  branch: main
-  clientSecretName: ssh-auth-github
-  paths:
-    - /manifests/harvester/images
-  targets:
-    - name: harvester
-      clusterGroup: homelab-harvester
-EOF
-```
-
-This targets the cluster group we created earlier.
-
-Currently, the attempt to use Fleet to manage Harvester workloads fails from this private Git server, complaining of a host key mismatch. Rather than figuring out how to fix that, for now, we can simply install the Helm chart by normal means.
-
-First, ensure you are using the correct kubeconfig for the Harvester cluster, *not* Rancher.
-
-```sh
-cat <<EOF | helm upgrade csi-driver-nfs oci://registry.lab.internal:5000/charts/csi-driver-nfs --namespace kube-system --version 4.13.4 --values -
-controller:
-  replicas: 2
-  affinity:
-    podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - topologyKey: kubernetes.io/hostname
-          labelSelector:
-            matchLabels:
-              app: csi-nfs-controller
-image:
-  baseRepo: registry.lab.internal:5000
-  nfs:
-    repository: registry.lab.internal:5000/sig-storage/nfsplugin
-    tag: v4.13.4
-  csiProvisioner:
-    repository: /rancher/mirrored-sig-storage-csi-provisioner
-    tag: v6.3.0
-  csiResizer:
-    repository: /rancher/mirrored-sig-storage-csi-resizer
-    tag: v2.2.1
-  csiSnapshotter:
-    repository: /rancher/mirrored-sig-storage-csi-snapshotter
-    tag: v8.6.0
-  livenessProbe:
-    repository: /rancher/mirrored-sig-storage-livenessprobe
-    tag: v2.19.0
-  nodeDriverRegistrar:
-    repository: /rancher/mirrored-sig-storage-csi-node-driver-registrar
-    tag: v2.17.0
-  externalSnapshotter:
-    repository: /rancher/mirrored-sig-storage-snapshot-controller
-    tag: v8.4.0
-storageClasses:
-  - name: nfs-delete
-    parameters:
-      server: nas.lab.internal
-      share: /mnt/shared/data
-    reclaimPolicy: Delete
-    volumeBindingMode: Immediate
-    mountOptions:
-      - nfsvers=4.1
-  - name: nfs-retain
-    parameters:
-      server: nas.lab.internal
-      share: /mnt/shared/data
-    reclaimPolicy: Retain
-    volumeBindingMode: Immediate
-    mountOptions:
-      - nfsvers=4.1
-EOF
-```
 
 # Conclusion
 

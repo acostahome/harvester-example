@@ -19,7 +19,7 @@ locals {
   hvst_cluster_id = "c-h4cj9"
   name            = "demo-cluster"
   namespace       = "demo-cluster"
-  vmi_name        = "image-982t9"
+  vmi_name        = "leap-16"
 }
 
 # IPPool for Ingress/API load balancers
