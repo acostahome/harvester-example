@@ -4,7 +4,7 @@ Download a kubeconfig from the Rancher UI into your home directory, name it `hom
 
 ```sh
 HARVESTER_CLUSTER_ID=$(kubectl --kubeconfig "$HOME/homelab-rancher.yaml" get clusters.management.cattle.io -oyaml | yq '.items[] | select(.spec.displayName=="homelab") | .metadata.name')
-RANCHER_PASSWORD="m8THD8jL\!1fR9C7v"
+RANCHER_PASSWORD=""
 export RANCHER_URL="https://rancher.home.internal"
 export RANCHER_TOKEN_KEY=$(curl -s "$RANCHER_URL/v1-public/login" \
   -X POST \
