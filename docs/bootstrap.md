@@ -1,6 +1,6 @@
 # Bootstrap Resources
 
-This will install all of the remaining infrastructure-layer resources that are not pre-bundled, including networks, a virtual machine image, and the `nfs-csi-driver` along with two NFS storage classes.
+This will install all of the remaining infrastructure-layer resources that are not pre-bundled, including networks and a virtual machine image for openSUSE Leap 16.0.
 
 ## Setting up Fleet to Manage Harvester
 
