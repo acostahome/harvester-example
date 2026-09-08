@@ -51,6 +51,6 @@ helm:
         volumeBindingMode: Immediate
         mountOptions:
           - nfsvers=4.1
-      version: 4.13.4
+  version: 4.13.4
 name: csi-driver-nfs
 namespace: kube-system
