@@ -1,0 +1,9 @@
+network:
+  ethernets:
+    enp1s0:
+      dhcp4: true
+      dhcp6: false
+      dhcp-identifier: mac
+    match:
+      macaddress: 52:54:00:12:35:a1
+  version: 2

@@ -23,7 +23,7 @@ curl -s -X POST "$RANCHER_URL/k8s/clusters/${HARVESTER_CLUSTER_ID}/v1/harvester/
   > files/${CLUSTER_NAME}-kubeconfig
 ```
 
-Beware that a token for Rancher created this way is good for only a single day. Alternatively, create an API key in the UI and it will be good for 30 days.
+Beware that a token for Rancher created this way is good for only a single day. Alternatively, create an API key in the UI and it will be good for 30 days. You also must update the local variable for the Harvester cluster ID.
 
 Then to run Terraform:
 

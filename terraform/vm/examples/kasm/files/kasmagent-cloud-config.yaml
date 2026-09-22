@@ -1,0 +1,29 @@
+#cloud-config
+packages:
+  - qemu-guest-agent
+package_update: true
+runcmd:
+  - - systemctl
+    - enable
+    - --now
+    - qemu-guest-agent.service
+  - |
+    IMAGES_SERVER_URL="192.168.3.138:8080"
+    cd /tmp
+    curl -sO http://${IMAGES_SERVER_URL}/kasm_release_1.18.1.tar.gz
+    curl -sO http://${IMAGES_SERVER_URL}/kasm_release_service_images_amd64_1.18.1.tar.gz
+    curl -sO http://${IMAGES_SERVER_URL}/kasm_release_workspace_images_amd64_1.18.1.tar.gz
+    curl -sO http://${IMAGES_SERVER_URL}/kasm_release_network_plugin_images_amd64_1.18.1.tar.gz
+    curl -sO http://${IMAGES_SERVER_URL}/kasm_release_logging_plugin_images_amd64_1.18.1.tar.gz
+    tar -xf kasm_release_1.18.1.tar.gz
+swap:
+   filename: /var/swap.1
+   size: 8589934592
+users:
+  - name: kasm-admin
+    shell: /bin/bash
+    lock_passwd: false
+    passwd: $6$TUu6Rf6Sqqp8rRDL$LK21aFhqaBLlbffbbtXUmOvzQUCLg4U7upgdzWwrXp3heYKIhkK.JS3NDHByynUjn0ltpwNjYOfElWZxJbpGe.
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGUV5mYJt2mNSayglG9+ez4W66Cj5PdBfvg5+Mqf+e9G

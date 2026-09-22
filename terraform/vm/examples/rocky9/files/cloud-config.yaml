@@ -1,0 +1,16 @@
+#cloud-config
+package_update: false
+runcmd:
+  - - systemctl
+    - enable
+    - '--now'
+    - qemu-guest-agent
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGUV5mYJt2mNSayglG9+ez4W66Cj5PdBfvg5+Mqf+e9G
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXKUEIYjdLCC3sc7M7m9CwP48EAr+OIWg/HaRct4ySJ
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKfcJb6/jblOBMgwYwhZWk65vIpFuv9PZ2Dt0ulO+ccK
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3Trbi3L21QECLF067lbZU4tjV2l3wnhE++C7PTZ6mQ
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFVn5aTqxzXihtAu3SGGkbrzuQufJ71j2yJWyVUcjFyP
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDivYFF5bMZMiOK7t6SZas7fi1kqdbCuBvOGrVHCOlm1
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ4Hn6O8zcojKsGcmcbYXTjwS3pM6cS3wofw/Z9CnvF
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1WfSgq1+Lpjay3sqNU6SZsVXT5VQtpDTfStQiFe26e

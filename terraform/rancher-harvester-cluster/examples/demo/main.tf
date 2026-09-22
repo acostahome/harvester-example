@@ -16,7 +16,7 @@ provider "harvester" {
 }
 
 locals {
-  hvst_cluster_id = "c-h4cj9"
+  hvst_cluster_id = "c-v6wpq"
   name            = "demo-cluster"
   namespace       = "demo-cluster"
   vmi_name        = "leap-16"

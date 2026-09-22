@@ -1,0 +1,76 @@
+#cloud-config
+package_update: false
+runcmd:
+  - - systemctl
+    - enable
+    - --now
+    - qemu-guest-agent
+  - - systemctl
+    - restart
+    - systemd-modules-load
+  - - systemctl
+    - restart
+    - systemd-sysctl
+  - - systemctl
+    - restart
+    - chronyd
+  - - systemctl
+    - restart
+    - NetworkManager
+  - - sed 
+    - -i
+    - 's/^SELINUX=.*$/SELINUX=permissive/' 
+    - /etc/selinux/config
+  - - setenforce
+    - '0'
+users:
+  - name: rancher
+    gecos: "cloud-init default user"
+    primary_group: rancher
+    groups: wheel,systemd-journal
+    lock_passwd: false
+    passwd: $6$h6ymuCD2iKF0QYpP$LxBsi92Bjg7jGcp8H0OBH8I4Sq8VboRBah51yWTvsu.xlShHiojhZXe2G4.HgwW.WFjgiUR/CUFsa6q2ie7jU/
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGUV5mYJt2mNSayglG9+ez4W66Cj5PdBfvg5+Mqf+e9G
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXKUEIYjdLCC3sc7M7m9CwP48EAr+OIWg/HaRct4ySJ
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKfcJb6/jblOBMgwYwhZWk65vIpFuv9PZ2Dt0ulO+ccK
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3Trbi3L21QECLF067lbZU4tjV2l3wnhE++C7PTZ6mQ
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFVn5aTqxzXihtAu3SGGkbrzuQufJ71j2yJWyVUcjFyP
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDivYFF5bMZMiOK7t6SZas7fi1kqdbCuBvOGrVHCOlm1
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+  - name: etcd
+    gecos: "etcd user"
+    shell: /sbin/nologin
+    system: true
+write_files:
+  - content: |
+      refclock PHC /dev/ptp0 poll 2
+    path: /etc/chrony.d/kvm.conf
+  - content: |
+      cmdport 0
+      port 0
+    path: /etc/chrony.d/server.conf
+  - content: |
+      [keyfile]
+      unmanaged-devices=interface-name:cilium*;interface-name:lxc*
+    path: /etc/NetworkManager/conf.d/cilium.conf
+  - content: |
+      br_netfilter
+      overlay
+      ptp_kvm
+    path: /etc/modules-load.d/90-kubernetes.conf
+  - content: |
+      kernel.panic = 10
+      kernel.panic_on_oops = 1
+      kernel.keys.root_maxbytes = 25000000
+      kernel.keys.root_maxkeys = 1000000
+      vm.overcommit_memory = 1
+      vm.panic_on_oom = 0
+    path: /etc/sysctl.d/90-kubelet.conf
+  - content: |
+      cni: cilium
+      cloud-provider-config: /var/lib/rancher/rke2/etc/config-files/cloud-provider-config
+      cloud-provider-name: harvester
+      ingress-controller: traefik
+      profile: cis
+    path: /etc/rancher/rke2/config.yaml

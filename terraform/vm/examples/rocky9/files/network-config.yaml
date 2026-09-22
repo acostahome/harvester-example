@@ -1,0 +1,7 @@
+network:
+  ethernets:
+    eth0:
+      dhcp4: true
+      dhcp6: false
+      dhcp-identifier: mac
+  version: 2

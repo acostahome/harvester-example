@@ -38,6 +38,10 @@ resource "rancher2_cloud_credential" "harvester" {
   }
 }
 
+data "rancher2_cloud_credential" "harvester" {
+  name = "homelab"
+}
+
 resource "rancher2_secret_v2" "registryconfig-auth" {
   cluster_id = "local"
   name       = "registryconfig-auth-${local.cluster_name}"
@@ -103,7 +107,7 @@ resource "rancher2_machine_config_v2" "worker" {
 resource "rancher2_cluster_v2" "demo" {
   name = local.cluster_name
 
-  cloud_credential_secret_name                               = rancher2_cloud_credential.harvester.id
+  cloud_credential_secret_name                               = data.rancher2_cloud_credential.harvester.id
   default_pod_security_admission_configuration_template_name = local.psa_template
   enable_network_policy                                      = false
   kubernetes_version                                         = local.kubernetes_version
