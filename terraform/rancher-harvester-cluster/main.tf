@@ -193,16 +193,8 @@ resource "rancher2_cluster_v2" "demo" {
         auth_config_secret_name = "registryconfig-auth-${local.cluster_name}"
       }
       mirrors {
-        hostname = "docker.io"
-        endpoints = ["registry.lab.internal:5000"]
-      }
-      mirrors {
-        hostname = "registry.rancher.com"
-        endpoints = ["registry.lab.internal:5000"]
-      }
-      mirrors {
-        hostname = "registry.suse.com"
-        endpoints = ["registry.lab.internal:5000"]
+        hostname = "*"
+        endpoints = ["registry.lab.internal"]
       }
     }
   }
