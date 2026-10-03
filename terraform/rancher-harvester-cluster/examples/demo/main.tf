@@ -50,12 +50,12 @@ module "cluster" {
   cp_nodes                = 3
   hvst_cluster_id         = local.hvst_cluster_id
   hvst_sa_kubeconfig      = file("${path.module}/files/demo-cluster-kubeconfig")
-  kubernetes_version      = "v1.35.7+rke2r1"
+  kubernetes_version      = "v1.36.5+rke2r1"
   network_name            = "vmnet"
   registry_password       = "Rancher!234"
   registry_user           = "rancher"
   ssh_user                = "sles"
-  system_default_registry = "registry.lab.internal:5000"
+  system_default_registry = "registry.lab.internal"
   vm_namespace            = local.namespace
   vmi_name                = local.vmi_name
 }

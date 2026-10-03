@@ -7,9 +7,9 @@ helm:
   version: 4.13.4
   values:
     image:
-      baseRepo: registry.lab.internal:5000
+      baseRepo: registry.lab.internal
       nfs:
-        repository: registry.lab.internal:5000/sig-storage/nfsplugin
+        repository: registry.lab.internal/sig-storage/nfsplugin
         tag: v4.13.4
       csiProvisioner:
         repository: /rancher/mirrored-sig-storage-csi-provisioner
